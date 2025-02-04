@@ -6,7 +6,7 @@ OBJ 		= $(subst src, build, $(patsubst %.cpp, %.o, $(SRC)))
 DBG 		= 	# debug flags
 
 INCLUDE 	= -I include
-LIB 		= # none for now
+LIB 		= -lgdi32
 EXTRA		= -Werror -Wall
 STATIC  	= -static
 

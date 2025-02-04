@@ -1,4 +1,4 @@
-#include "Vector.hpp"
+#include <Vector.hpp>
 
 template <typename Type>
 inline Vec2<Type>::Vec2()

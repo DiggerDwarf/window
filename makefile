@@ -27,4 +27,10 @@ build/%.o: src/%.cpp
 	g++ $(INCLUDE) -c src/$*.cpp -o build/$*.o $(DBG) $(EXTRA)
 
 link: $(OBJ)
-	g++ $(OBJ) -o $(EXE) $(LIB) $(STATIC) $(DBG) $(EXTRA)
+	g++ $(OBJ) build/check.res -o $(EXE) $(LIB) $(STATIC) $(DBG) $(EXTRA)
+
+rc_file/%:
+	windres src/$*.rc -O coff -o build/$*.res
+
+test:
+	g++ 

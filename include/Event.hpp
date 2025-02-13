@@ -1,27 +1,29 @@
 #ifndef __Event_hpp_INCLUDED
 #define __Event_hpp_INCLUDED
 
+#include <Keyboard.hpp>
+#include <Mouse.hpp>
+
 class Event
 {
 public:
 
-    enum EventType {
-        WINDOW_CLOSED,
-        KEY_INPUT,
-        MOUSE_INPUT
+    enum class EventType {
+        Close,
+        KeyPress,
+        KeyRelease,
+        MousePress,
+        MouseRelease
     };
 
-    struct Keyboard
+    struct KeyEvent
     {
-        unsigned code;
-        bool    alt;
-        bool    ctrl;
-        bool    shift;
-        bool    super;
+        Keyboard::Key key;
     };
     
-    struct Mouse
+    struct MouseEvent
     {
+        Mouse::Button   button;
         int x;
         int y;
     };
@@ -30,8 +32,8 @@ public:
 
     union
     {
-        Keyboard        keyInfo;
-        Mouse           mouseInfo;
+        KeyEvent         keyInfo;
+        MouseEvent       mouseInfo;
     };
 
 };

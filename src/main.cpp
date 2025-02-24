@@ -20,7 +20,7 @@ int main(int argc, char const *argv[])
 
     #define nb_VERTICES 6
 
-    const float vertices[nb_VERTICES*2] = {
+    float vertices[nb_VERTICES*2] = {
         -0.5, -0.5,
         0, 0.5,
         0.5, -0.5,
@@ -51,8 +51,13 @@ int main(int argc, char const *argv[])
     // glMatrixMode(GL_PROJECTION);
     // glOrtho(0, 1280, 0, 800, -1, 1);
 
+    float deltaTime;
+    sw::Clock clock;
+    unsigned selected = 0;
+
     while (running)
     {
+        deltaTime = clock.restart().asSeconds();
         while (window.getEvent(&event))
         {
             switch (event.type)
@@ -64,7 +69,27 @@ int main(int argc, char const *argv[])
                     std::cout << "Click coordinates : " << sw::iVec2(event.mouseInfo.x, event.mouseInfo.y) << "\n";
                     break;
                 case sw::Event::EventType::KeyPress:
-                    printf("%d\n", static_cast<int>(event.keyInfo.key));
+                    switch (event.keyInfo.key)
+                    {
+                    case sw::Keyboard::Key::Right:
+                        vertices[2*selected] += deltaTime;
+                        break;
+                    case sw::Keyboard::Key::Left:
+                        vertices[2*selected] -= deltaTime;
+                        break;
+                    case sw::Keyboard::Key::Up:
+                        vertices[2*selected + 1] += deltaTime;
+                        break;
+                    case sw::Keyboard::Key::Down:
+                        vertices[2*selected + 1] -= deltaTime;
+                        break;
+                    case sw::Keyboard::Key::Enter:
+                        selected = (selected + 1) % nb_VERTICES;
+                        break;
+
+                    default:
+                        break;
+                    }
                 
                 default:
                     break;

@@ -5,6 +5,9 @@
 #include <ostream>
 #endif
 
+namespace sw
+{
+
 template<typename Type>
 class Vec2
 {
@@ -133,6 +136,8 @@ typedef Vec4<unsigned>  uVec4;
 
 
 #include "Vector.inl"
+
+}   // namespace sw
 
 #endif // __Vector_hpp_INCLUDED
 

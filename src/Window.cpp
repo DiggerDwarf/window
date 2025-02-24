@@ -1,5 +1,9 @@
 #include <Window.hpp>
 
+#include <iostream>
+
+namespace sw
+{
 
 Keyboard::Key Window::translateKeyCode(WPARAM key, LPARAM info)
 {
@@ -160,7 +164,7 @@ Window::Window(unsigned x, unsigned y, std::string title) :
     ReleaseDC(NULL, screenContext);
 
     // Window classic style
-    DWORD winStyle = WS_VISIBLE | WS_CAPTION | WS_MINIMIZEBOX | WS_SYSMENU | WS_THICKFRAME | WS_MAXIMIZEBOX;
+    DWORD winStyle = WS_CAPTION | WS_MINIMIZEBOX | WS_SYSMENU | WS_THICKFRAME | WS_MAXIMIZEBOX;
 
 
     // Set window bounds then let Windows correct them
@@ -171,11 +175,37 @@ Window::Window(unsigned x, unsigned y, std::string title) :
 
     // Create the window and pass `this` to be able to reference instance in callbacks
     this->m_handle = CreateWindowA(Window::className, title.c_str(), winStyle, left, top, width, height, NULL, NULL, GetModuleHandle(NULL), this);
-
-    // Make sure the window is shown
-    ShowWindow(m_handle, SW_SHOW);
+    // Can cache device context because of window class style CS_OWNDC
+    this->m_deviceContext = GetDC(this->m_handle);
 
     ++nb_windows;
+
+
+    PIXELFORMATDESCRIPTOR pfd = {0};
+    pfd.nSize              = sizeof(PIXELFORMATDESCRIPTOR);
+    pfd.nVersion           = 1;
+    pfd.dwFlags            = PFD_DRAW_TO_WINDOW | PFD_SUPPORT_OPENGL | PFD_DOUBLEBUFFER;
+    pfd.iPixelType         = PFD_TYPE_RGBA;
+    pfd.cColorBits         = 32;
+    pfd.cDepthBits         = 24;
+    pfd.cStencilBits       = 8;
+
+    int pixelFormatNumber = ChoosePixelFormat(this->m_deviceContext, &pfd);
+    SetPixelFormat(this->m_deviceContext, pixelFormatNumber, &pfd);
+
+    this->m_glContext.create(this->m_deviceContext);
+
+    ShowWindow(this->m_handle, SW_SHOW);
+
+
+    // this->m_OpenGL_Handle = wglCreateContext(this->m_deviceContext);
+
+    
+    // if (!this->m_OpenGL_Handle)
+    // {
+    //     std::cout << "fuck this shit\n";
+    // }
+    this->m_internalClock.restart();
 }
 
 // Should be done, maybe add more cleanup if I find out it's needed
@@ -328,7 +358,7 @@ const iVec2 &Window::getScreenSize()
 void Window::createWindowClass()
 {
     WNDCLASSA windowClass;
-    windowClass.style           = 0;                        // i dunno
+    windowClass.style           = CS_OWNDC;                        // i dunno
     windowClass.lpfnWndProc     = &Window::globalCallback;  // window class global callback that handles calling individual callbacks
     windowClass.cbClsExtra      = 0;                        // no extra needed
     windowClass.cbWndExtra      = 0;                        // no extra needed
@@ -509,3 +539,40 @@ void Window::processEvent(UINT uMsg, WPARAM wParam, LPARAM lParam)
             break;
     }
 }
+
+void Window::update()
+{
+    // Update
+    SwapBuffers(this->m_deviceContext);
+    
+    const Time idealDeltaTime = Time::fromSeconds(0.01);
+
+    const Time realDeltaTime = this->m_internalClock.restart();
+
+    // std::cout << idealDeltaTime.asMicroseconds() << ' ' << realDeltaTime.asMicroseconds() << '\n';
+
+    long long diff = idealDeltaTime.asMicroseconds() - realDeltaTime.asMicroseconds();
+
+        // std::cout << diff << '\n';
+    if (diff >= 0)
+    {
+        Sleep(diff/1000);
+    }
+
+
+}
+
+void Window::clear(const Color& clearColor)
+{
+    this->m_glContext.set_active();
+    glClearColor(
+        clearColor.r / 255.F,
+        clearColor.g / 255.F,
+        clearColor.b / 255.F,
+        clearColor.a / 255.F
+    );
+    glClear(GL_COLOR_BUFFER_BIT);
+}
+
+}   // namespace sw
+

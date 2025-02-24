@@ -1,5 +1,9 @@
 #include <Clock.hpp>
 
+
+namespace sw
+{
+
 Time::Time(long long microseconds) :
     m_microseconds(microseconds)
 {
@@ -22,7 +26,7 @@ long long Time::asMicroseconds() const
 
 Time Time::fromSeconds(float seconds)
 {
-    return Time(static_cast<long long>(seconds) * 1000000);
+    return Time(static_cast<long long>(seconds * 1000000));
 }
 
 Time Time::fromMicroseconds(long long microseconds)
@@ -40,7 +44,7 @@ Time Time::operator+(const Time &other) const
     return Time(this->m_microseconds + other.m_microseconds);
 }
 
-#include <cstdio>
+
 Clock::Clock()
 {
     LARGE_INTEGER ticks;
@@ -66,3 +70,5 @@ Time Clock::restart()
     this->m_startTime = newStart;
     return out;
 }
+
+}   // namespace sw

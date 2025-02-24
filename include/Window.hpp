@@ -6,12 +6,18 @@
 #include <Vector.hpp>
 #include <Mouse.hpp>
 #include <Keyboard.hpp>
+#include <GLContext.hpp>
+#include <Clock.hpp>
+#include <Color.hpp>
 
 #include <winuser.h>
 #include <string>
 #include <queue>
 #include <map>
 
+
+namespace sw
+{
 
 inline unsigned nb_windows = 0;
 
@@ -20,8 +26,12 @@ class Window
 {
 private:
     HWND            m_handle;
+    HDC             m_deviceContext;
+    GLContext       m_glContext;
     HCURSOR&        m_usedCursor;
     fVec2           m_subPixel;
+    Clock           m_internalClock;
+
     inline static iVec2 screenSize = iVec2();
 
     std::queue<Event> m_eventQueue;
@@ -49,6 +59,9 @@ public:
     static LRESULT CALLBACK globalCallback(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
     void processEvent(UINT uMsg, WPARAM wParam, LPARAM lParam);
 
+    void update();
+    void clear(const Color& clearColor = Color::Black);
+
     bool getEvent(Event* p_event);
 
     void setCursor(Mouse::Cursor cursorType);
@@ -66,7 +79,9 @@ public:
     iVec2 windowToScreen(const iVec2 pos) const;
 
     static const iVec2& getScreenSize();
-};
+};  // class Window
+
+}   // namespace sw
 
 
 #endif // __Window_hpp_INCLUDED

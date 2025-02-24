@@ -1,6 +1,9 @@
 #ifndef __Keyboard_hpp_INCLUDED
 #define __Keyboard_hpp_INCLUDED
 
+namespace sw
+{
+
 class Keyboard
 {
 public:
@@ -114,5 +117,7 @@ public:
 
     };
 };
+
+}   // namespace sw
 
 #endif // __Keyboard_hpp_INCLUDED

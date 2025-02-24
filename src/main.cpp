@@ -11,39 +11,78 @@
 
 int main(int argc, char const *argv[])
 {
-    // Window backWindow(3000, 3000, "Eello, World !");
-    Window window(1280, 800, "Hello, World !");
-    // const iVec2 screenSize = Window::getScreenSize();
-    // backWindow.setBox({-20, -20}, screenSize + iVec2(20, 20));
+    sw::Window window(800, 800, "Hello, World !");
 
-    // fVec2 vel(120, -120);
+    window.setCursor(sw::Mouse::Cursor::CROSS);
 
-    Event event;
+    sw::Event event;
     bool running = true;
 
-    // Clock clock;
-    // float dt;
+    #define nb_VERTICES 6
+
+    const float vertices[nb_VERTICES*2] = {
+        -0.5, -0.5,
+        0, 0.5,
+        0.5, -0.5,
+        -0.5, 0.5,
+        0, -0.5,
+        0.5, 1.0
+    };
+
+    const sw::Color colors[nb_VERTICES] = {
+        sw::Color::Red,
+        sw::Color::Blue,
+        sw::Color::Green,
+        sw::Color(255, 0, 0, 255),
+        sw::Color(0, 255, 0, 127),
+        sw::Color(0, 0, 255, 0)
+    };
+
+    
+    glEnableClientState(GL_VERTEX_ARRAY);
+    glEnableClientState(GL_COLOR_ARRAY);
+
+    // glDisable(GL_ALPHA_TEST);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+    glEnable(GL_BLEND);
+    glEnable(GL_POLYGON_SMOOTH);
+
+    // glMatrixMode(GL_PROJECTION);
+    // glOrtho(0, 1280, 0, 800, -1, 1);
 
     while (running)
     {
-        // while (backWindow.getEvent(&event));
         while (window.getEvent(&event))
         {
             switch (event.type)
             {
-                case Event::EventType::Close:
+                case sw::Event::EventType::Close:
                     running = false;
                     break;
-                case Event::EventType::MousePress:
-                    std::cout << "Click coordinates : " << iVec2(event.mouseInfo.x, event.mouseInfo.y) << "\n";
+                case sw::Event::EventType::MousePress:
+                    std::cout << "Click coordinates : " << sw::iVec2(event.mouseInfo.x, event.mouseInfo.y) << "\n";
                     break;
-                case Event::EventType::KeyPress:
+                case sw::Event::EventType::KeyPress:
                     printf("%d\n", static_cast<int>(event.keyInfo.key));
                 
                 default:
                     break;
             }
         }
+
+        window.clear(sw::Color::Black);
+
+
+
+        glVertexPointer(2, GL_FLOAT, 0, vertices);
+        glColorPointer(4, GL_UNSIGNED_BYTE, 0, colors);
+
+        glDrawArrays(GL_TRIANGLES, 0, nb_VERTICES);
+
+        window.update();
+
+
 
         // dt = clock.restart().asSeconds();
 

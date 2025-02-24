@@ -4,6 +4,9 @@
 #include <Keyboard.hpp>
 #include <Mouse.hpp>
 
+namespace sw
+{
+
 class Event
 {
 public:
@@ -38,5 +41,6 @@ public:
 
 };
 
+}   // namespace sw
 
 #endif // __Event_hpp_INCLUDED

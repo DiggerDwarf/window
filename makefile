@@ -6,8 +6,8 @@ OBJ 		= $(subst src, build, $(patsubst %.cpp, %.o, $(SRC)))
 DBG 		= 	# debug flags
 
 INCLUDE 	= -I include
-LIB 		= -lgdi32
-EXTRA		= -Werror -Wall
+LIB 		= -lglew32 -lopengl32 -lgdi32
+EXTRA		= -Werror -Wall -DGLEW_STATIC
 STATIC  	= -static
 
 all: link

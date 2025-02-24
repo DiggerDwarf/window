@@ -3,6 +3,9 @@
 
 #include <profileapi.h>
 
+namespace sw
+{
+
 class Time
 {
 private:
@@ -33,5 +36,6 @@ public:
     Time restart();
 };
 
+}   // namespace sw
 
 #endif // __Clock_hpp_INCLUDED

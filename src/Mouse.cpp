@@ -1,6 +1,9 @@
 #include <Mouse.hpp>
 #include <Window.hpp>
 
+namespace sw
+{
+
 const iVec2 Mouse::getMousePos()
 {
     iVec2 pos;
@@ -25,3 +28,5 @@ void Mouse::setMousePos(iVec2 newPosition, const Window &reference)
     ClientToScreen(reference.getWin32Handle(), reinterpret_cast<LPPOINT>(&newPosition));
     SetCursorPos(newPosition.x, newPosition.y);
 }
+
+}   // namespace sw

@@ -4,6 +4,9 @@
 #include <Vector.hpp>
 #include <windows.h>
 
+namespace sw
+{
+
 class Window;
 
 class Mouse
@@ -32,5 +35,6 @@ public:
     static void setMousePos(iVec2 newPosition, const Window& reference);
 };
 
+}   // namespace sw
 
 #endif // __Mouse_hpp_INCLUDED

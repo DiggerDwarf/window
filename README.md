@@ -12,3 +12,24 @@ not yet have any ideas on what to name this pseudo-future-maybe-library (hence t
 simple repository name)
 
 *Note to self that i'll never read again : commit more frequently you dumbass*
+
+**Technically not 0 libraries used, as i use GLEW to load OpenGL functions :disapointed:**
+
+## Section to debate with myself about the title
+
+title idea : simple Windows window manager, abbreviated ``SWWM``, namespace ``sw``
+
+Maybe since i intend to do this alone do like ``myselfFunction`` and make the 
+namespace ``my`` (but replacing ``myself`` with my name, ``Function`` with the 
+function of the library and ``my`` with a shorthand for my name)
+
+That way i can even generalize + keep the same namespace
+
+But like with my current username it would be like ``diggerWM`` or something
+
+*god i should change my username shouldn't I... \*goes through an existential crisis 
+about that\**
+
+well for now i guess i'll keep ``sw`` as namespace (simple window or smth) and the 
+library unnamed...
+

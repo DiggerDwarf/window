@@ -31,6 +31,7 @@ private:
     HCURSOR&        m_usedCursor;
     fVec2           m_subPixel;
     Clock           m_internalClock;
+    Time            m_targetRate;
 
     inline static iVec2 screenSize = iVec2();
 
@@ -50,7 +51,7 @@ private:
 public:
 
     Window();
-    Window(unsigned x, unsigned y, std::string title = "Some window");
+    Window(unsigned x, unsigned y, std::string title, float targetFPS = 60);
     ~Window();
 
     // void open(unsigned x, unsigned y, std::string title = "Some window");
@@ -61,6 +62,7 @@ public:
 
     void update();
     void clear(const Color& clearColor = Color::Black);
+    void setTargetFPS(float targetFPS);
 
     bool getEvent(Event* p_event);
 

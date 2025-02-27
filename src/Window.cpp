@@ -5,6 +5,23 @@
 namespace sw
 {
 
+// Done, don't touch unless class parameters need to be changed
+void Window::createWindowClass()
+{
+    WNDCLASSA windowClass;
+    windowClass.style           = CS_OWNDC;                        // i dunno
+    windowClass.lpfnWndProc     = &Window::globalCallback;  // window class global callback that handles calling individual callbacks
+    windowClass.cbClsExtra      = 0;                        // no extra needed
+    windowClass.cbWndExtra      = 0;                        // no extra needed
+    windowClass.hInstance       = GetModuleHandle(NULL);    // just get global hInstance
+    windowClass.hIcon           = NULL;                     // Set no icon
+    windowClass.hCursor         = NULL;                     // Get no cursor
+    windowClass.hbrBackground   = NULL;                     // No default background brush, i clear myself
+    windowClass.lpszMenuName    = NULL;                     // No menu cuz idk what it is
+    windowClass.lpszClassName   = Window::className;        // Class name
+    RegisterClassA(&windowClass);
+}
+
 Keyboard::Key Window::translateKeyCode(WPARAM key, LPARAM info)
 {
     // TODO: maybe order them in order of `key` to match documentation page ?
@@ -140,9 +157,10 @@ Window::Window() :
 
 // Done until it isn't
 // If I implement more stuff, it'll probably need more initializing
-Window::Window(unsigned x, unsigned y, std::string title) :
+Window::Window(unsigned x, unsigned y, std::string title, float targetFPS) :
     m_handle(NULL),
-    m_usedCursor(Window::cursor_arrow)
+    m_usedCursor(Window::cursor_arrow),
+    m_targetRate(Time::fromSeconds(1.0F/targetFPS))
 {
     // If first wiwndow, create Win32 window class
     if (nb_windows == 0)
@@ -223,154 +241,6 @@ Window::~Window()
         UnregisterClassA(Window::className, GetModuleHandleA(NULL));
 }
 
-// Should be done as it gives all the work to oter functions
-bool Window::getEvent(Event* p_event)
-{
-    // If the event queue is empty, poll for more
-    if (this->m_eventQueue.empty())
-    {
-        // Gather all the available messages
-        MSG message;
-        while (PeekMessageA(&message, NULL, 0, 0, PM_REMOVE))
-        {
-            TranslateMessage(&message);
-            // Send the messages to the callback function
-            DispatchMessageA(&message);
-        }
-        
-    }
-
-    // If there is events in the queue, write on event and return true
-    if (!this->m_eventQueue.empty())
-    {
-        *p_event = this->m_eventQueue.front();
-        this->m_eventQueue.pop();
-        return true;
-    }
-    return false;
-}
-
-// Easy and done, update when adding cursors to Mouse::Cursors
-void Window::setCursor(Mouse::Cursor cursorType)
-{
-    switch (cursorType)
-    {
-        case Mouse::Cursor::ARROW:
-            this->m_usedCursor = Window::cursor_arrow;
-            break;
-        case Mouse::Cursor::FINGER:
-            this->m_usedCursor = Window::cursor_finger;
-            break;
-        case Mouse::Cursor::CROSS:
-            this->m_usedCursor = Window::cursor_cross;
-            break;
-        case Mouse::Cursor::NO:
-            this->m_usedCursor = Window::cursor_no;
-            break;
-        default:
-            break;
-    }
-}
-
-// Straightforward and done
-const HWND Window::getWin32Handle() const
-{
-    return this->m_handle;
-}
-
-iVec2 Window::getPosition() const
-{
-    WINDOWPLACEMENT info = this->getWindowPlacementInfo();
-    return iVec2(info.rcNormalPosition.left, info.rcNormalPosition.top);
-}
-
-iVec2 Window::getSize() const
-{
-    WINDOWPLACEMENT info = this->getWindowPlacementInfo();
-    return iVec2(
-        info.rcNormalPosition.right - info.rcNormalPosition.left,
-        info.rcNormalPosition.bottom - info.rcNormalPosition.top
-    );
-}
-
-void Window::setPosition(iVec2 newPosition)
-{
-    WINDOWPLACEMENT info = this->getWindowPlacementInfo();
-    info.rcNormalPosition.right  += newPosition.x - info.rcNormalPosition.left;
-    info.rcNormalPosition.bottom += newPosition.y - info.rcNormalPosition.top;
-    info.rcNormalPosition.left    = newPosition.x;
-    info.rcNormalPosition.top     = newPosition.y;
-    SetWindowPlacement(this->m_handle, &info);
-}
-
-void Window::move(fVec2 offset)
-{
-    fVec2 totalOffset = offset + this->m_subPixel;
-    iVec2 actualOffset(totalOffset);
-    this->m_subPixel = totalOffset - fVec2(actualOffset);
-
-    WINDOWPLACEMENT info = this->getWindowPlacementInfo();
-    info.rcNormalPosition.right  += actualOffset.x;
-    info.rcNormalPosition.left   += actualOffset.x;
-    info.rcNormalPosition.top    += actualOffset.y;
-    info.rcNormalPosition.bottom += actualOffset.y;
-    SetWindowPlacement(this->m_handle, &info);
-}
-
-void Window::setSize(iVec2 newSize)
-{
-    WINDOWPLACEMENT info = this->getWindowPlacementInfo();
-    info.rcNormalPosition.right = info.rcNormalPosition.left + newSize.x;
-    info.rcNormalPosition.bottom = info.rcNormalPosition.top + newSize.y;
-    SetWindowPlacement(this->m_handle, &info);
-}
-
-void Window::setBox(iVec2 topLeft, iVec2 bottomRight)
-{
-    WINDOWPLACEMENT info = this->getWindowPlacementInfo();
-    info.rcNormalPosition.left   = topLeft.x;
-    info.rcNormalPosition.top    = topLeft.y;
-    info.rcNormalPosition.right  = bottomRight.x;
-    info.rcNormalPosition.bottom = bottomRight.y;
-    SetWindowPlacement(this->m_handle, &info);
-}
-
-iVec2 Window::screenToWindow(const iVec2 pos) const
-{
-    iVec2 out = pos;
-    ScreenToClient(this->m_handle, reinterpret_cast<LPPOINT>(&out));
-    return out;
-}
-
-iVec2 Window::windowToScreen(const iVec2 pos) const
-{
-    iVec2 out = pos;
-    ClientToScreen(this->m_handle, reinterpret_cast<LPPOINT>(&out));
-    return out;
-}
-
-const iVec2 &Window::getScreenSize()
-{
-    return Window::screenSize;
-}
-
-// Done, don't touch unless class parameters need to be changed
-void Window::createWindowClass()
-{
-    WNDCLASSA windowClass;
-    windowClass.style           = CS_OWNDC;                        // i dunno
-    windowClass.lpfnWndProc     = &Window::globalCallback;  // window class global callback that handles calling individual callbacks
-    windowClass.cbClsExtra      = 0;                        // no extra needed
-    windowClass.cbWndExtra      = 0;                        // no extra needed
-    windowClass.hInstance       = GetModuleHandle(NULL);    // just get global hInstance
-    windowClass.hIcon           = NULL;                     // Set no icon
-    windowClass.hCursor         = NULL;                     // Get no cursor
-    windowClass.hbrBackground   = NULL;                     // No default background brush, i clear myself
-    windowClass.lpszMenuName    = NULL;                     // No menu cuz idk what it is
-    windowClass.lpszClassName   = Window::className;        // Class name
-    RegisterClassA(&windowClass);
-}
-
 // Mostly finished
 // TODO : maybe prevent certain events from reaching DefWindowProc
 LRESULT CALLBACK Window::globalCallback(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
@@ -378,10 +248,10 @@ LRESULT CALLBACK Window::globalCallback(HWND hWnd, UINT uMsg, WPARAM wParam, LPA
     if (uMsg == WM_CREATE)
     {
         // Get window creation arguments
-        CREATESTRUCT* createStruct = reinterpret_cast<CREATESTRUCT*>(lParam);
+        const CREATESTRUCT* createStruct = reinterpret_cast<CREATESTRUCT*>(lParam);
 
         // Get window pointer that was passed as lpParam to CreateWindow
-        Window* windowInstance = reinterpret_cast<Window*>(createStruct->lpCreateParams);
+        const Window* windowInstance = reinterpret_cast<Window*>(createStruct->lpCreateParams);
 
         // Set this Window instance pointer as user data in the window data
         SetWindowLongPtrA(hWnd, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(windowInstance));
@@ -545,21 +415,13 @@ void Window::update()
     // Update
     SwapBuffers(this->m_deviceContext);
     
-    const Time idealDeltaTime = Time::fromSeconds(0.01);
+    const Time deltaTime = this->m_internalClock.restart();
 
-    const Time realDeltaTime = this->m_internalClock.restart();
+    const long long diff = this->m_targetRate.asMicroseconds() - deltaTime.asMicroseconds();
 
-    // std::cout << idealDeltaTime.asMicroseconds() << ' ' << realDeltaTime.asMicroseconds() << '\n';
-
-    long long diff = idealDeltaTime.asMicroseconds() - realDeltaTime.asMicroseconds();
-
-        // std::cout << diff << '\n';
     if (diff >= 0)
-    {
         Sleep(diff/1000);
-    }
-
-
+    
 }
 
 void Window::clear(const Color& clearColor)
@@ -571,7 +433,143 @@ void Window::clear(const Color& clearColor)
         clearColor.b / 255.F,
         clearColor.a / 255.F
     );
-    glClear(GL_COLOR_BUFFER_BIT);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+}
+
+void Window::setTargetFPS(float targetFPS)
+{
+    this->m_targetRate = Time::fromSeconds(1.0F/targetFPS);
+}
+
+// Should be done as it gives all the work to oter functions
+bool Window::getEvent(Event* p_event)
+{
+    // If the event queue is empty, poll for more
+    if (this->m_eventQueue.empty())
+    {
+        // Gather all the available messages
+        MSG message;
+        while (PeekMessageA(&message, NULL, 0, 0, PM_REMOVE))
+        {
+            TranslateMessage(&message);
+            // Send the messages to the callback function
+            DispatchMessageA(&message);
+        }
+        
+    }
+
+    // If there is events in the queue, write on event and return true
+    if (!this->m_eventQueue.empty())
+    {
+        *p_event = this->m_eventQueue.front();
+        this->m_eventQueue.pop();
+        return true;
+    }
+    return false;
+}
+
+// Easy and done, update when adding cursors to Mouse::Cursors
+void Window::setCursor(Mouse::Cursor cursorType)
+{
+    switch (cursorType)
+    {
+        case Mouse::Cursor::ARROW:
+            this->m_usedCursor = Window::cursor_arrow;
+            break;
+        case Mouse::Cursor::FINGER:
+            this->m_usedCursor = Window::cursor_finger;
+            break;
+        case Mouse::Cursor::CROSS:
+            this->m_usedCursor = Window::cursor_cross;
+            break;
+        case Mouse::Cursor::NO:
+            this->m_usedCursor = Window::cursor_no;
+            break;
+        default:
+            break;
+    }
+}
+
+// Straightforward and done
+const HWND Window::getWin32Handle() const
+{
+    return this->m_handle;
+}
+
+iVec2 Window::getPosition() const
+{
+    WINDOWPLACEMENT info = this->getWindowPlacementInfo();
+    return iVec2(info.rcNormalPosition.left, info.rcNormalPosition.top);
+}
+
+iVec2 Window::getSize() const
+{
+    WINDOWPLACEMENT info = this->getWindowPlacementInfo();
+    return iVec2(
+        info.rcNormalPosition.right - info.rcNormalPosition.left,
+        info.rcNormalPosition.bottom - info.rcNormalPosition.top
+    );
+}
+
+void Window::setPosition(iVec2 newPosition)
+{
+    WINDOWPLACEMENT info = this->getWindowPlacementInfo();
+    info.rcNormalPosition.right  += newPosition.x - info.rcNormalPosition.left;
+    info.rcNormalPosition.bottom += newPosition.y - info.rcNormalPosition.top;
+    info.rcNormalPosition.left    = newPosition.x;
+    info.rcNormalPosition.top     = newPosition.y;
+    SetWindowPlacement(this->m_handle, &info);
+}
+
+void Window::move(fVec2 offset)
+{
+    fVec2 totalOffset = offset + this->m_subPixel;
+    iVec2 actualOffset(totalOffset);
+    this->m_subPixel = totalOffset - fVec2(actualOffset);
+
+    WINDOWPLACEMENT info = this->getWindowPlacementInfo();
+    info.rcNormalPosition.right  += actualOffset.x;
+    info.rcNormalPosition.left   += actualOffset.x;
+    info.rcNormalPosition.top    += actualOffset.y;
+    info.rcNormalPosition.bottom += actualOffset.y;
+    SetWindowPlacement(this->m_handle, &info);
+}
+
+void Window::setSize(iVec2 newSize)
+{
+    WINDOWPLACEMENT info = this->getWindowPlacementInfo();
+    info.rcNormalPosition.right = info.rcNormalPosition.left + newSize.x;
+    info.rcNormalPosition.bottom = info.rcNormalPosition.top + newSize.y;
+    SetWindowPlacement(this->m_handle, &info);
+}
+
+void Window::setBox(iVec2 topLeft, iVec2 bottomRight)
+{
+    WINDOWPLACEMENT info = this->getWindowPlacementInfo();
+    info.rcNormalPosition.left   = topLeft.x;
+    info.rcNormalPosition.top    = topLeft.y;
+    info.rcNormalPosition.right  = bottomRight.x;
+    info.rcNormalPosition.bottom = bottomRight.y;
+    SetWindowPlacement(this->m_handle, &info);
+}
+
+iVec2 Window::screenToWindow(const iVec2 pos) const
+{
+    iVec2 out = pos;
+    ScreenToClient(this->m_handle, reinterpret_cast<LPPOINT>(&out));
+    return out;
+}
+
+iVec2 Window::windowToScreen(const iVec2 pos) const
+{
+    iVec2 out = pos;
+    ClientToScreen(this->m_handle, reinterpret_cast<LPPOINT>(&out));
+    return out;
+}
+
+const iVec2 &Window::getScreenSize()
+{
+    return Window::screenSize;
 }
 
 }   // namespace sw

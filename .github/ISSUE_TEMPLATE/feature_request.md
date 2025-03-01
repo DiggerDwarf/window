@@ -13,4 +13,4 @@ assignees: DiggerDwarf
 ### Provide an example of why this could be needed
 
 
-### More in-depth requests or description  *[ Optional ]*
+### More in-depth requests or description  (optional)

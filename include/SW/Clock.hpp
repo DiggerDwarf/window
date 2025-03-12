@@ -1,12 +1,14 @@
 #ifndef __Clock_hpp_INCLUDED
 #define __Clock_hpp_INCLUDED
 
+#include <SW/Config.hpp>
+
 #include <profileapi.h>
 
 namespace sw
 {
 
-class Time
+class SW_API Time
 {
 private:
     friend class Clock;
@@ -22,9 +24,12 @@ public:
 
     Time operator-(const Time& other) const;
     Time operator+(const Time& other) const;
+
+    void operator-=(const Time& other);
+    void operator+=(const Time& other);
 };
 
-class Clock
+class SW_API Clock
 {
 private:
     Time m_startTime;

@@ -1,18 +1,21 @@
 #ifndef __Event_hpp_INCLUDED
 #define __Event_hpp_INCLUDED
 
-#include <Keyboard.hpp>
-#include <Mouse.hpp>
+#include <SW/Config.hpp>
+#include <SW/Keyboard.hpp>
+#include <SW/Mouse.hpp>
+#include <SW/Vector.hpp>
 
 namespace sw
 {
 
-class Event
+class SW_API Event
 {
 public:
 
     enum class EventType {
-        Close,
+        None = -1,
+        Close = 0,
         KeyPress,
         KeyRelease,
         MousePress,
@@ -27,8 +30,7 @@ public:
     struct MouseEvent
     {
         Mouse::Button   button;
-        int x;
-        int y;
+        iVec2           position;
     };
 
     EventType type;
@@ -39,6 +41,7 @@ public:
         MouseEvent       mouseInfo;
     };
 
+    inline Event() : type(EventType::None) {}
 };
 
 }   // namespace sw

@@ -1,4 +1,4 @@
-#include <GLContext.hpp>
+#include <SW/GLContext.hpp>
 
 
 namespace sw

@@ -1,10 +1,15 @@
 #ifndef __Keyboard_hpp_INCLUDED
 #define __Keyboard_hpp_INCLUDED
 
+#include <SW/Config.hpp>
+
+#define VC_EXTRALEAN
+#include <windows.h>
+
 namespace sw
 {
 
-class Keyboard
+class SW_API Keyboard
 {
 public:
     // The Num[X] are the numbers & symbols at the top of the keyboard
@@ -116,6 +121,12 @@ public:
         Equal
 
     };
+
+    static Key winCodeToKey(WPARAM key, LPARAM info);
+    static int keyToWinCode(Key key);
+
+    static bool isKeyPressed(Key key);
+
 };
 
 }   // namespace sw

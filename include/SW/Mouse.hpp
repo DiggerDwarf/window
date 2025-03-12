@@ -1,15 +1,17 @@
 #ifndef __Mouse_hpp_INCLUDED
 #define __Mouse_hpp_INCLUDED
 
-#include <Vector.hpp>
+#include <SW/Config.hpp>
+#include <SW/Vector.hpp>
+
 #include <windows.h>
 
 namespace sw
 {
 
-class Window;
+class SW_API Window;
 
-class Mouse
+class SW_API Mouse
 {
 public:
     // When modifying this, update Window::setCursor

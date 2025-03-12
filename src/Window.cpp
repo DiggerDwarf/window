@@ -1,9 +1,18 @@
-#include <Window.hpp>
+#include <SW/Window.hpp>
 
 #include <iostream>
+#include <cmath>
 
 namespace sw
 {
+
+unsigned Window::nb_windows = 0;
+iVec2 Window::screenSize = iVec2();
+
+HCURSOR Window::cursor_arrow = LoadCursor(NULL, IDC_ARROW);
+HCURSOR Window::cursor_finger = LoadCursor(NULL, IDC_HAND);
+HCURSOR Window::cursor_cross = LoadCursor(NULL, IDC_CROSS);
+HCURSOR Window::cursor_no = LoadCursor(NULL, IDC_NO);
 
 // Done, don't touch unless class parameters need to be changed
 void Window::createWindowClass()
@@ -22,123 +31,6 @@ void Window::createWindowClass()
     RegisterClassA(&windowClass);
 }
 
-Keyboard::Key Window::translateKeyCode(WPARAM key, LPARAM info)
-{
-    // TODO: maybe order them in order of `key` to match documentation page ?
-    switch (key)
-    {
-        case 'A': return Keyboard::Key::A;
-        case 'B': return Keyboard::Key::B;
-        case 'C': return Keyboard::Key::C;
-        case 'D': return Keyboard::Key::D;
-        case 'E': return Keyboard::Key::E;
-        case 'F': return Keyboard::Key::F;
-        case 'G': return Keyboard::Key::G;
-        case 'H': return Keyboard::Key::H;
-        case 'I': return Keyboard::Key::I;
-        case 'J': return Keyboard::Key::J;
-        case 'K': return Keyboard::Key::K;
-        case 'L': return Keyboard::Key::L;
-        case 'M': return Keyboard::Key::M;
-        case 'N': return Keyboard::Key::N;
-        case 'O': return Keyboard::Key::O;
-        case 'P': return Keyboard::Key::P;
-        case 'Q': return Keyboard::Key::Q;
-        case 'R': return Keyboard::Key::R;
-        case 'S': return Keyboard::Key::S;
-        case 'T': return Keyboard::Key::T;
-        case 'U': return Keyboard::Key::U;
-        case 'V': return Keyboard::Key::V;
-        case 'W': return Keyboard::Key::W;
-        case 'X': return Keyboard::Key::X;
-        case 'Y': return Keyboard::Key::Y;
-        case 'Z': return Keyboard::Key::Z;
-
-        case '0': return Keyboard::Key::Num0;
-        case '1': return Keyboard::Key::Num1;
-        case '2': return Keyboard::Key::Num2;
-        case '3': return Keyboard::Key::Num3;
-        case '4': return Keyboard::Key::Num4;
-        case '5': return Keyboard::Key::Num5;
-        case '6': return Keyboard::Key::Num6;
-        case '7': return Keyboard::Key::Num7;
-        case '8': return Keyboard::Key::Num8;
-        case '9': return Keyboard::Key::Num9;
-
-        case VK_F1:  return Keyboard::Key::F1;
-        case VK_F2:  return Keyboard::Key::F2;
-        case VK_F3:  return Keyboard::Key::F3;
-        case VK_F4:  return Keyboard::Key::F4;
-        case VK_F5:  return Keyboard::Key::F5;
-        case VK_F6:  return Keyboard::Key::F6;
-        case VK_F7:  return Keyboard::Key::F7;
-        case VK_F8:  return Keyboard::Key::F8;
-        case VK_F9:  return Keyboard::Key::F9;
-        case VK_F10: return Keyboard::Key::F10;
-        case VK_F11: return Keyboard::Key::F11;
-        case VK_F12: return Keyboard::Key::F12;
-        case VK_F13: return Keyboard::Key::F13;
-        case VK_F14: return Keyboard::Key::F14;
-        case VK_F15: return Keyboard::Key::F15;
-        case VK_F16: return Keyboard::Key::F16;
-        case VK_F17: return Keyboard::Key::F17;
-        case VK_F18: return Keyboard::Key::F18;
-        case VK_F19: return Keyboard::Key::F19;
-        case VK_F20: return Keyboard::Key::F20;
-        case VK_F21: return Keyboard::Key::F21;
-        case VK_F22: return Keyboard::Key::F22;
-        case VK_F23: return Keyboard::Key::F23;
-        case VK_F24: return Keyboard::Key::F24;
-
-        case VK_NUMPAD0: return Keyboard::Key::Numpad0;
-        case VK_NUMPAD1: return Keyboard::Key::Numpad1;
-        case VK_NUMPAD2: return Keyboard::Key::Numpad2;
-        case VK_NUMPAD3: return Keyboard::Key::Numpad3;
-        case VK_NUMPAD4: return Keyboard::Key::Numpad4;
-        case VK_NUMPAD5: return Keyboard::Key::Numpad5;
-        case VK_NUMPAD6: return Keyboard::Key::Numpad6;
-        case VK_NUMPAD7: return Keyboard::Key::Numpad7;
-        case VK_NUMPAD8: return Keyboard::Key::Numpad8;
-        case VK_NUMPAD9: return Keyboard::Key::Numpad9;
-
-        case VK_LWIN:    return Keyboard::Key::LSuper;
-        case VK_RWIN:    return Keyboard::Key::RSuper;
-        case VK_CONTROL: return ((HIWORD(info) & KF_EXTENDED) == 0) ? Keyboard::Key::LControl
-                                                                    : Keyboard::Key::RControl;
-        case VK_MENU:    return ((HIWORD(info) & KF_EXTENDED) == 0) ? Keyboard::Key::LAlt
-                                                                    : Keyboard::Key::RAlt;
-        case VK_SHIFT: {
-            static UINT lShiftScanCode = MapVirtualKey(VK_LSHIFT, MAPVK_VK_TO_VSC);
-            UINT keyScanCode = (info >> 16) & 0xFF;
-            return keyScanCode == lShiftScanCode ? Keyboard::Key::LShift : Keyboard::Key::RShift;
-        }
-
-        case VK_LEFT:   return Keyboard::Key::Left;
-        case VK_UP:     return Keyboard::Key::Up;
-        case VK_RIGHT:  return Keyboard::Key::Right;
-        case VK_DOWN:   return Keyboard::Key::Down;
-
-        case VK_PRIOR:  return Keyboard::Key::PageUp;
-        case VK_NEXT:   return Keyboard::Key::PageDown;
-        case VK_HOME:   return Keyboard::Key::Home;
-        case VK_END:    return Keyboard::Key::End;
-
-        case VK_BACK:   return Keyboard::Key::Backspace;
-        case VK_DELETE: return Keyboard::Key::Delete;
-        case VK_TAB:    return Keyboard::Key::Tab;
-        case VK_RETURN: return Keyboard::Key::Enter;
-        case VK_SPACE:  return Keyboard::Key::Space;
-        case VK_ESCAPE: return Keyboard::Key::Escape;
-
-        case VK_CAPITAL:    return Keyboard::Key::CapsLock;
-        case VK_NUMLOCK:    return Keyboard::Key::NumLock;
-
-        case VK_OEM_PLUS:   return Keyboard::Key::Equal;
-
-    
-        default: return Keyboard::Key::Unkown;
-    }
-}
 
 WINDOWPLACEMENT Window::getWindowPlacementInfo() const
 {
@@ -146,13 +38,6 @@ WINDOWPLACEMENT Window::getWindowPlacementInfo() const
     out.length = sizeof(WINDOWPLACEMENT);
     GetWindowPlacement(this->m_handle, &out);
     return out;
-}
-
-// Done
-Window::Window() :
-    m_handle(NULL),
-    m_usedCursor(Window::cursor_arrow)
-{
 }
 
 // Done until it isn't
@@ -213,16 +98,16 @@ Window::Window(unsigned x, unsigned y, std::string title, float targetFPS) :
 
     this->m_glContext.create(this->m_deviceContext);
 
+    glEnableClientState(GL_VERTEX_ARRAY);
+    glEnableClientState(GL_COLOR_ARRAY);
+
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+    glEnable(GL_BLEND);
+    glEnable(GL_DEPTH_TEST);
+
     ShowWindow(this->m_handle, SW_SHOW);
 
-
-    // this->m_OpenGL_Handle = wglCreateContext(this->m_deviceContext);
-
-    
-    // if (!this->m_OpenGL_Handle)
-    // {
-    //     std::cout << "fuck this shit\n";
-    // }
     this->m_internalClock.restart();
 }
 
@@ -310,7 +195,7 @@ void Window::processEvent(UINT uMsg, WPARAM wParam, LPARAM lParam)
         case WM_KEYDOWN:
         {
             event.type = Event::EventType::KeyPress;
-            event.keyInfo.key = Window::translateKeyCode(wParam, lParam);
+            event.keyInfo.key = Keyboard::winCodeToKey(wParam, lParam);
             this->m_eventQueue.push(event);
             break;
         }
@@ -319,7 +204,7 @@ void Window::processEvent(UINT uMsg, WPARAM wParam, LPARAM lParam)
         case WM_KEYUP:
         {
             event.type = Event::EventType::KeyRelease;
-            event.keyInfo.key = Window::translateKeyCode(wParam, lParam);
+            event.keyInfo.key = Keyboard::winCodeToKey(wParam, lParam);
             this->m_eventQueue.push(event);
             break;
         }
@@ -328,8 +213,8 @@ void Window::processEvent(UINT uMsg, WPARAM wParam, LPARAM lParam)
         {
             event.type = Event::EventType::MousePress;
             event.mouseInfo.button = Mouse::Button::Left;
-            event.mouseInfo.x = LOWORD(lParam);
-            event.mouseInfo.y = HIWORD(lParam);
+            event.mouseInfo.position.x = LOWORD(lParam);
+            event.mouseInfo.position.y = HIWORD(lParam);
             this->m_eventQueue.push(event);
             break;
         }
@@ -338,8 +223,8 @@ void Window::processEvent(UINT uMsg, WPARAM wParam, LPARAM lParam)
         {
             event.type = Event::EventType::MousePress;
             event.mouseInfo.button = Mouse::Button::Middle;
-            event.mouseInfo.x = LOWORD(lParam);
-            event.mouseInfo.y = HIWORD(lParam);
+            event.mouseInfo.position.x = LOWORD(lParam);
+            event.mouseInfo.position.y = HIWORD(lParam);
             this->m_eventQueue.push(event);
             break;
         }
@@ -348,8 +233,8 @@ void Window::processEvent(UINT uMsg, WPARAM wParam, LPARAM lParam)
         {
             event.type = Event::EventType::MousePress;
             event.mouseInfo.button = Mouse::Button::Right;
-            event.mouseInfo.x = LOWORD(lParam);
-            event.mouseInfo.y = HIWORD(lParam);
+            event.mouseInfo.position.x = LOWORD(lParam);
+            event.mouseInfo.position.y = HIWORD(lParam);
             this->m_eventQueue.push(event);
             break;
         }
@@ -358,8 +243,8 @@ void Window::processEvent(UINT uMsg, WPARAM wParam, LPARAM lParam)
         {
             event.type = Event::EventType::MousePress;
             event.mouseInfo.button = (HIWORD(wParam) == XBUTTON1) ? Mouse::Button::Extra1 : Mouse::Button::Extra2;
-            event.mouseInfo.x = LOWORD(lParam);
-            event.mouseInfo.y = HIWORD(lParam);
+            event.mouseInfo.position.x = LOWORD(lParam);
+            event.mouseInfo.position.y = HIWORD(lParam);
             this->m_eventQueue.push(event);
             break;
         }
@@ -368,8 +253,8 @@ void Window::processEvent(UINT uMsg, WPARAM wParam, LPARAM lParam)
         {
             event.type = Event::EventType::MouseRelease;
             event.mouseInfo.button = Mouse::Button::Left;
-            event.mouseInfo.x = LOWORD(lParam);
-            event.mouseInfo.y = HIWORD(lParam);
+            event.mouseInfo.position.x = LOWORD(lParam);
+            event.mouseInfo.position.y = HIWORD(lParam);
             this->m_eventQueue.push(event);
             break;
         }
@@ -378,8 +263,8 @@ void Window::processEvent(UINT uMsg, WPARAM wParam, LPARAM lParam)
         {
             event.type = Event::EventType::MouseRelease;
             event.mouseInfo.button = Mouse::Button::Middle;
-            event.mouseInfo.x = LOWORD(lParam);
-            event.mouseInfo.y = HIWORD(lParam);
+            event.mouseInfo.position.x = LOWORD(lParam);
+            event.mouseInfo.position.y = HIWORD(lParam);
             this->m_eventQueue.push(event);
             break;
         }
@@ -388,8 +273,8 @@ void Window::processEvent(UINT uMsg, WPARAM wParam, LPARAM lParam)
         {
             event.type = Event::EventType::MouseRelease;
             event.mouseInfo.button = Mouse::Button::Right;
-            event.mouseInfo.x = LOWORD(lParam);
-            event.mouseInfo.y = HIWORD(lParam);
+            event.mouseInfo.position.x = LOWORD(lParam);
+            event.mouseInfo.position.y = HIWORD(lParam);
             this->m_eventQueue.push(event);
             break;
         }
@@ -398,8 +283,8 @@ void Window::processEvent(UINT uMsg, WPARAM wParam, LPARAM lParam)
         {
             event.type = Event::EventType::MouseRelease;
             event.mouseInfo.button = (HIWORD(wParam) == XBUTTON1) ? Mouse::Button::Extra1 : Mouse::Button::Extra2;
-            event.mouseInfo.x = LOWORD(lParam);
-            event.mouseInfo.y = HIWORD(lParam);
+            event.mouseInfo.position.x = LOWORD(lParam);
+            event.mouseInfo.position.y = HIWORD(lParam);
             this->m_eventQueue.push(event);
             break;
         }
@@ -410,7 +295,7 @@ void Window::processEvent(UINT uMsg, WPARAM wParam, LPARAM lParam)
     }
 }
 
-void Window::update()
+void Window::display()
 {
     // Update
     SwapBuffers(this->m_deviceContext);
@@ -496,6 +381,11 @@ const HWND Window::getWin32Handle() const
     return this->m_handle;
 }
 
+const HDC Window::getDeviceContext() const
+{
+    return this->m_deviceContext;
+}
+
 iVec2 Window::getPosition() const
 {
     WINDOWPLACEMENT info = this->getWindowPlacementInfo();
@@ -553,14 +443,14 @@ void Window::setBox(iVec2 topLeft, iVec2 bottomRight)
     SetWindowPlacement(this->m_handle, &info);
 }
 
-iVec2 Window::screenToWindow(const iVec2 pos) const
+iVec2 Window::screenToWindow(const iVec2& pos) const
 {
     iVec2 out = pos;
     ScreenToClient(this->m_handle, reinterpret_cast<LPPOINT>(&out));
     return out;
 }
 
-iVec2 Window::windowToScreen(const iVec2 pos) const
+iVec2 Window::windowToScreen(const iVec2& pos) const
 {
     iVec2 out = pos;
     ClientToScreen(this->m_handle, reinterpret_cast<LPPOINT>(&out));
@@ -570,6 +460,28 @@ iVec2 Window::windowToScreen(const iVec2 pos) const
 const iVec2 &Window::getScreenSize()
 {
     return Window::screenSize;
+}
+
+void Window::setView(const View& view)
+{
+    this->m_glContext.set_active();
+    int previousMode;
+    glGetIntegerv(GL_MATRIX_MODE, &previousMode);
+    glMatrixMode(GL_PROJECTION);
+    
+    glLoadIdentity();
+    if (view.type == View::Projection::Orthographic) {
+        glOrtho(-2, 2, -2, 2, -2, 2);
+    } else {
+        const iVec2 windowSize = this->getSize();
+        const float aspect = static_cast<float>(windowSize.x) / static_cast<float>(windowSize.y);
+        const float top = view.nearPlane * tanf(view.fovY / 2.0F);
+        const float right = top * aspect;
+        glFrustum(-right, right, top, -top, view.nearPlane, view.farPlane);
+    }
+    glRotatef(view.rotation.angle * (57.2957795131), view.rotation.axis.x, view.rotation.axis.y, view.rotation.axis.z);
+    glTranslatef(view.position.x, view.position.y, view.position.z);
+    glMatrixMode(previousMode);
 }
 
 }   // namespace sw

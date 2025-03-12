@@ -1,4 +1,4 @@
-#include <Clock.hpp>
+#include <SW/Clock.hpp>
 
 
 namespace sw
@@ -44,6 +44,15 @@ Time Time::operator+(const Time &other) const
     return Time(this->m_microseconds + other.m_microseconds);
 }
 
+void Time::operator-=(const Time &other)
+{
+    this->m_microseconds -= other.m_microseconds;
+}
+
+void Time::operator+=(const Time &other)
+{
+    this->m_microseconds += other.m_microseconds;
+}
 
 Clock::Clock()
 {

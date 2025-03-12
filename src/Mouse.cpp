@@ -1,5 +1,5 @@
-#include <Mouse.hpp>
-#include <Window.hpp>
+#include <SW/Mouse.hpp>
+#include <SW/Window.hpp>
 
 namespace sw
 {

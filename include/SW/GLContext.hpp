@@ -1,6 +1,7 @@
 #ifndef __GLContext_hpp_INCLUDED
 #define __GLContext_hpp_INCLUDED
 
+#include <SW/Config.hpp>
 
 #define VC_EXTRALEAN
 #include <windows.h>
@@ -10,7 +11,7 @@
 namespace sw
 {
 
-class GLContext
+class SW_API GLContext
 {
 private:
     HDC     m_deviceContext;

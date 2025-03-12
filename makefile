@@ -6,31 +6,35 @@ OBJ 		= $(subst src, build, $(patsubst %.cpp, %.o, $(SRC)))
 DBG 		= 	# debug flags
 
 INCLUDE 	= -I include
-LIB 		= -lglew32 -lopengl32 -lgdi32
+LIB 		= -Llib -lglew32 -lopengl32 -lgdi32
 EXTRA		= -Werror -Wall -DGLEW_STATIC
 STATIC  	= -static
 
-all: link
+
+all: shared static
 
 remake: clean all
 
-kaboom/%:	# if I ever need to integrate a file
-	objcopy -I binary -O elf64-x86-64 obj/$*.obj build/$*.o
-
-run:
-	$(EXE)
-
 clean:
-	rm $(subst build/, build\, $(OBJ))
+	rm -f $(subst build/, build/, $(OBJ))
 
 build/%.o: src/%.cpp
-	g++ $(INCLUDE) -c src/$*.cpp -o build/$*.o $(DBG) $(EXTRA)
+	g++ $(INCLUDE) -c src/$*.cpp -o build/$*.o $(DBG) $(EXTRA) -DSW_BUILD
 
-link: $(OBJ)
-	g++ $(OBJ) build/check.res -o $(EXE) $(LIB) $(STATIC) $(DBG) $(EXTRA)
 
 rc_file/%:
 	windres src/$*.rc -O coff -o build/$*.res
 
-test:
-	g++ 
+demo/%:
+	g++ $(INCLUDE) -c examples/$*.cpp -o examples/$*.o $(EXTRA)
+	g++ examples/$*.o -Llib -lsw32-shared -lglew32 -lopengl32 -o examples/$*.exe
+	rm examples/$*.o
+	./examples/$*.exe
+
+static: $(OBJ)
+	ar rs lib/libsw32-static.a $(OBJ)
+
+shared: $(OBJ)
+	g++ $(OBJ) $(LIB) -shared -o libsw32.dll -Wl,--out-implib,lib/libsw32-shared.a
+
+.PHONY: all remake clean static shared demo/%

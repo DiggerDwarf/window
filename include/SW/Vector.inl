@@ -1,4 +1,4 @@
-#include <Vector.hpp>
+// THIS FILE IS NOT TO BE INCLUDED MANUALLY
 
 template <typename Type>
 inline Vec2<Type>::Vec2()
@@ -25,6 +25,24 @@ inline Vec2<Type>::Vec2(const Vec2<otherType> &other) :
     x(static_cast<otherType>(other.x)),
     y(static_cast<otherType>(other.y))
 {
+}
+
+template <typename Type>
+inline float Vec2<Type>::length() const
+{
+    return sqrtf(this->x*this->x + this->y*this->y);
+}
+
+template <typename Type>
+inline void Vec2<Type>::normalize()
+{
+    *this /= this->length();
+}
+
+template <typename Type>
+inline Vec2<Type> Vec2<Type>::normalized() const
+{
+    return *this / this->length();
 }
 
 template <typename Type>
@@ -133,6 +151,24 @@ inline Vec3<Type>::Vec3(const Vec3<otherType> &other) :
     y(static_cast<otherType>(other.y)),
     z(static_cast<otherType>(other.z))
 {
+}
+
+template <typename Type>
+inline float Vec3<Type>::length() const
+{
+    return sqrtf(this->x*this->x + this->y*this->y + this->z*this->z);
+}
+
+template <typename Type>
+inline void Vec3<Type>::normalize()
+{
+    *this /= this->length();
+}
+
+template <typename Type>
+inline Vec3<Type> Vec3<Type>::normalized() const
+{
+    return *this / this->length();
 }
 
 template <typename Type>
@@ -250,6 +286,24 @@ inline Vec4<Type>::Vec4(const Vec4<otherType> &other) :
     z(static_cast<otherType>(other.z)),
     w(static_cast<otherType>(other.w))
 {
+}
+
+template <typename Type>
+inline float Vec4<Type>::length() const
+{
+    return sqrtf(this->x*this->x + this->y*this->y + this->z*this->z + this->w*this->w);
+}
+
+template <typename Type>
+inline void Vec4<Type>::normalize()
+{
+    *this /= this->length();
+}
+
+template <typename Type>
+inline Vec4<Type> Vec4<Type>::normalized() const
+{
+    return *this / this->length();
 }
 
 template <typename Type>

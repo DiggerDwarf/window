@@ -477,7 +477,7 @@ void Window::setView(const View& view)
         const float aspect = static_cast<float>(windowSize.x) / static_cast<float>(windowSize.y);
         const float top = view.nearPlane * tanf(view.fovY / 2.0F);
         const float right = top * aspect;
-        glFrustum(-right, right, top, -top, view.nearPlane, view.farPlane);
+        glFrustum(-right, right, -top, top, view.nearPlane, view.farPlane);
     }
     glRotatef(view.rotation.angle * (57.2957795131), view.rotation.axis.x, view.rotation.axis.y, view.rotation.axis.z);
     glTranslatef(view.position.x, view.position.y, view.position.z);

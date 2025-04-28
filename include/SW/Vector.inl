@@ -1,7 +1,9 @@
 // THIS FILE IS NOT TO BE INCLUDED MANUALLY
 
 template <typename Type>
-inline Vec2<Type>::Vec2()
+inline Vec2<Type>::Vec2() :
+    x(0),
+    y(0)
 {
 }
 
@@ -124,7 +126,10 @@ inline void Vec2<Type>::operator/=(const Type other)
 }
 
 template <typename Type>
-inline Vec3<Type>::Vec3() 
+inline Vec3<Type>::Vec3() :
+    x(0),
+    y(0),
+    z(0)
 {
 }
 
@@ -256,7 +261,11 @@ inline void Vec3<Type>::operator/=(const Type other)
 }
 
 template <typename Type>
-inline Vec4<Type>::Vec4() 
+inline Vec4<Type>::Vec4() :
+    x(0),
+    y(0),
+    z(0),
+    w(0)
 {
 }
 

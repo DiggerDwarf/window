@@ -1,10 +1,9 @@
 #ifndef __Keyboard_hpp_INCLUDED
 #define __Keyboard_hpp_INCLUDED
 
+
 #include <SW/Config.hpp>
 
-#define VC_EXTRALEAN
-#include <windows.h>
 
 namespace sw
 {

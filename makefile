@@ -19,7 +19,7 @@ clean:
 	rm -f $(subst build/, build/, $(OBJ))
 
 build/%.o: src/%.cpp
-	g++ $(INCLUDE) -c src/$*.cpp -o build/$*.o $(DBG) $(EXTRA) -DSW_BUILD
+	g++ $(INCLUDE) -c src/$*.cpp -o build/$*.o $(DBG) $(EXTRA) -DSW_BUILD -DSW_DEBUG
 
 
 rc_file/%:

@@ -21,6 +21,7 @@
 namespace sw
 {
 
+/// @brief Easy to handle class for managing windows
 class SW_API Window
 {
 private:

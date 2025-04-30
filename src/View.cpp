@@ -42,11 +42,19 @@ void Quaternion::operator*=(const Quaternion &other)
 
 Rotation Quaternion::toRotation() const
 {
+if (this->i == 0 && this->j == 0 && this->k == 0) {
+        return Rotation(fVec3(0, 0, 1), 0);
+    }
     float imaginaryLength = sqrt(this->i*this->i + this->j*this->j + this->k*this->k);
     return Rotation (
         fVec3(this->i/imaginaryLength, this->j/imaginaryLength, this->k/imaginaryLength),
         2.0F * atan2f(imaginaryLength, this->x)
     );
+}
+
+Rotation::Rotation() :
+    axis(0, 0, 1), angle(0)
+{
 }
 
 Rotation::Rotation(fVec3 axis, float angle) :

@@ -18,7 +18,9 @@ class SW_API Vertex
 public:
 
     Vertex();
-    Vertex(fVec3 position, Color color, fVec2 texCoord = fVec2(0, 0));
+    Vertex(const fVec3& position);
+    Vertex(float x, float y, float z);
+    Vertex(const fVec3& position, Color color, const fVec2& texCoord = fVec2(0));
 
     const Color& get_color() const;
     const fVec3& get_position() const;

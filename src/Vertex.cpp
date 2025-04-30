@@ -8,7 +8,17 @@ Vertex::Vertex()
 {
 }
 
-Vertex::Vertex(fVec3 position, Color color, fVec2 texCoord)
+Vertex::Vertex(float x, float y, float z)
+    : m_position(x, y, z), m_texCoord(0), m_color(Color::White)
+{
+}
+
+Vertex::Vertex(const fVec3& position)
+    : m_position(position), m_texCoord(0), m_color(Color::White)
+{
+}
+
+Vertex::Vertex(const fVec3& position, Color color, const fVec2& texCoord)
     : m_position(position), m_texCoord(texCoord), m_color(color)
 {
 }

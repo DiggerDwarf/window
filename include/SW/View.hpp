@@ -14,7 +14,7 @@ public:
     fVec3 axis;
     float angle;
     
-    Rotation() = default;
+    Rotation();
     Rotation(fVec3 axis, float angle);
 
     void rotate(fVec3 axis, float angle);

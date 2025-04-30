@@ -13,18 +13,20 @@ class SW_API Event
 {
 public:
 
-    enum class EventType {
+    enum class Type {
         None = -1,
         Close = 0,
         KeyPress,
         KeyRelease,
         MousePress,
-        MouseRelease
+        MouseRelease,
+        Resized,
+        Text
     };
 
     struct KeyEvent
     {
-        Keyboard::Key key;
+        Keyboard::Key   key;
     };
     
     struct MouseEvent
@@ -33,15 +35,29 @@ public:
         iVec2           position;
     };
 
-    EventType type;
+    struct SizeEvent
+    {
+        iVec2           newSize;
+        bool            isMaximized;
+        bool            isMinimized;
+    };
+
+    struct TextEvent
+    {
+        char            character;
+    };
+
+    Type type;
 
     union
     {
-        KeyEvent         keyInfo;
-        MouseEvent       mouseInfo;
+        KeyEvent        keyInfo;
+        MouseEvent      mouseInfo;
+        SizeEvent       sizeInfo;
+        TextEvent       textInfo;
     };
 
-    inline Event() : type(EventType::None) {}
+    inline Event() : type(Type::None) {}
 };
 
 }   // namespace sw

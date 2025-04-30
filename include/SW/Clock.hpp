@@ -3,7 +3,6 @@
 
 #include <SW/Config.hpp>
 
-#include <profileapi.h>
 
 namespace sw
 {

@@ -16,5 +16,32 @@
     #define SW_API SW_IMPORT
 #endif
 
+#ifdef SW_DEBUG
+    // If debug mode is enabled, include iostream everywhere for debug printing
+    #include <iostream>
+#endif
+
+#ifdef SW_WANT_WIN32_SYMBOLS
+    #include <windows.h>
+#else
+    #define DECL_HANDLE(name) struct name##__ ; typedef name##__* name;
+    DECL_HANDLE(HWND);
+    DECL_HANDLE(HDC);
+    DECL_HANDLE(HCURSOR);
+    DECL_HANDLE(WINDOWPLACEMENT);
+    typedef long long LRESULT, LPARAM;
+    typedef unsigned UINT;
+    typedef unsigned long long WPARAM;
+    typedef const char* LPCSTR;
+#endif
+
+#ifdef SW_WANT_GL_SYMBOLS
+    #include <GL/glew.h>
+#else
+    struct HDC__;
+    typedef HDC__* HDC;
+    struct HGLRC__;
+    typedef HGLRC__* HGLRC;
+#endif
 
 #endif // __Config_hpp_INCLUDED

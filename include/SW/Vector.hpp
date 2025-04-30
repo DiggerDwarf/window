@@ -7,8 +7,6 @@
 #include <ostream>
 #endif
 
-#include <cmath>
-
 namespace sw
 {
 

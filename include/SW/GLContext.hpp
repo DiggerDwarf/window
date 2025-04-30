@@ -3,10 +3,6 @@
 
 #include <SW/Config.hpp>
 
-#define VC_EXTRALEAN
-#include <windows.h>
-
-#include <GL/glew.h>
 
 namespace sw
 {

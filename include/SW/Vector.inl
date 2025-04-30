@@ -32,7 +32,7 @@ inline Vec2<Type>::Vec2(const Vec2<otherType> &other) :
 template <typename Type>
 inline float Vec2<Type>::length() const
 {
-    return sqrtf(this->x*this->x + this->y*this->y);
+    return __builtin_sqrtf(this->x*this->x + this->y*this->y);
 }
 
 template <typename Type>
@@ -161,7 +161,7 @@ inline Vec3<Type>::Vec3(const Vec3<otherType> &other) :
 template <typename Type>
 inline float Vec3<Type>::length() const
 {
-    return sqrtf(this->x*this->x + this->y*this->y + this->z*this->z);
+    return __builtin_sqrtf(this->x*this->x + this->y*this->y + this->z*this->z);
 }
 
 template <typename Type>
@@ -300,7 +300,7 @@ inline Vec4<Type>::Vec4(const Vec4<otherType> &other) :
 template <typename Type>
 inline float Vec4<Type>::length() const
 {
-    return sqrtf(this->x*this->x + this->y*this->y + this->z*this->z + this->w*this->w);
+    return __builtin_sqrtf(this->x*this->x + this->y*this->y + this->z*this->z + this->w*this->w);
 }
 
 template <typename Type>

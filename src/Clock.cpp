@@ -1,3 +1,4 @@
+#define SW_WANT_WIN32_SYMBOLS
 #include <SW/Clock.hpp>
 
 

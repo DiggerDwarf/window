@@ -3,7 +3,6 @@
 
 #include <SW/Config.hpp>
 
-#define VC_EXTRALEAN
 
 #include <SW/Event.hpp>
 #include <SW/Vector.hpp>
@@ -14,7 +13,6 @@
 #include <SW/Color.hpp>
 #include <SW/View.hpp>
 
-#include <winuser.h>
 #include <string>
 #include <queue>
 #include <map>

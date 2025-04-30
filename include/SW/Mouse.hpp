@@ -4,7 +4,6 @@
 #include <SW/Config.hpp>
 #include <SW/Vector.hpp>
 
-#include <windows.h>
 
 namespace sw
 {

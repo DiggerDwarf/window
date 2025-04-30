@@ -180,8 +180,7 @@ void Window::processEvent(UINT uMsg, WPARAM wParam, LPARAM lParam)
         // Called when clicking on the window's close button
         case WM_CLOSE:
         {
-            event.type = Event::EventType::Close;
-            this->m_eventQueue.push(event);
+            event.type = Event::Type::Close;
             break;
         }
 
@@ -196,105 +195,115 @@ void Window::processEvent(UINT uMsg, WPARAM wParam, LPARAM lParam)
         case WM_SYSKEYDOWN:
         case WM_KEYDOWN:
         {
-            event.type = Event::EventType::KeyPress;
+            event.type = Event::Type::KeyPress;
             event.keyInfo.key = Keyboard::winCodeToKey(wParam, lParam);
-            this->m_eventQueue.push(event);
             break;
         }
         
         case WM_SYSKEYUP:
         case WM_KEYUP:
         {
-            event.type = Event::EventType::KeyRelease;
+            event.type = Event::Type::KeyRelease;
             event.keyInfo.key = Keyboard::winCodeToKey(wParam, lParam);
-            this->m_eventQueue.push(event);
             break;
         }
 
         case WM_LBUTTONDOWN:
         {
-            event.type = Event::EventType::MousePress;
+            event.type = Event::Type::MousePress;
             event.mouseInfo.button = Mouse::Button::Left;
             event.mouseInfo.position.x = LOWORD(lParam);
             event.mouseInfo.position.y = HIWORD(lParam);
-            this->m_eventQueue.push(event);
             break;
         }
 
         case WM_MBUTTONDOWN:
         {
-            event.type = Event::EventType::MousePress;
+            event.type = Event::Type::MousePress;
             event.mouseInfo.button = Mouse::Button::Middle;
             event.mouseInfo.position.x = LOWORD(lParam);
             event.mouseInfo.position.y = HIWORD(lParam);
-            this->m_eventQueue.push(event);
             break;
         }
 
         case WM_RBUTTONDOWN:
         {
-            event.type = Event::EventType::MousePress;
+            event.type = Event::Type::MousePress;
             event.mouseInfo.button = Mouse::Button::Right;
             event.mouseInfo.position.x = LOWORD(lParam);
             event.mouseInfo.position.y = HIWORD(lParam);
-            this->m_eventQueue.push(event);
             break;
         }
 
         case WM_XBUTTONDOWN:
         {
-            event.type = Event::EventType::MousePress;
+            event.type = Event::Type::MousePress;
             event.mouseInfo.button = (HIWORD(wParam) == XBUTTON1) ? Mouse::Button::Extra1 : Mouse::Button::Extra2;
             event.mouseInfo.position.x = LOWORD(lParam);
             event.mouseInfo.position.y = HIWORD(lParam);
-            this->m_eventQueue.push(event);
             break;
         }
 
         case WM_LBUTTONUP:
         {
-            event.type = Event::EventType::MouseRelease;
+            event.type = Event::Type::MouseRelease;
             event.mouseInfo.button = Mouse::Button::Left;
             event.mouseInfo.position.x = LOWORD(lParam);
             event.mouseInfo.position.y = HIWORD(lParam);
-            this->m_eventQueue.push(event);
             break;
         }
 
         case WM_MBUTTONUP:
         {
-            event.type = Event::EventType::MouseRelease;
+            event.type = Event::Type::MouseRelease;
             event.mouseInfo.button = Mouse::Button::Middle;
             event.mouseInfo.position.x = LOWORD(lParam);
             event.mouseInfo.position.y = HIWORD(lParam);
-            this->m_eventQueue.push(event);
             break;
         }
 
         case WM_RBUTTONUP:
         {
-            event.type = Event::EventType::MouseRelease;
+            event.type = Event::Type::MouseRelease;
             event.mouseInfo.button = Mouse::Button::Right;
             event.mouseInfo.position.x = LOWORD(lParam);
             event.mouseInfo.position.y = HIWORD(lParam);
-            this->m_eventQueue.push(event);
             break;
         }
 
         case WM_XBUTTONUP:
         {
-            event.type = Event::EventType::MouseRelease;
+            event.type = Event::Type::MouseRelease;
             event.mouseInfo.button = (HIWORD(wParam) == XBUTTON1) ? Mouse::Button::Extra1 : Mouse::Button::Extra2;
             event.mouseInfo.position.x = LOWORD(lParam);
             event.mouseInfo.position.y = HIWORD(lParam);
-            this->m_eventQueue.push(event);
             break;
+        }
+
+        case WM_SIZE:
+        {
+            event.type = Event::Type::Resized;
+            event.sizeInfo.newSize = iVec2(LOWORD(lParam), HIWORD(lParam));
+            event.sizeInfo.isMaximized = wParam == SIZE_MAXIMIZED;
+            event.sizeInfo.isMinimized = wParam == SIZE_MINIMIZED;
+            glViewport(0, 0, event.sizeInfo.newSize.x, event.sizeInfo.newSize.y);
+        }
+
+        case WM_CHAR:
+        {
+            event.type = Event::Type::Text;
+            char character = static_cast<char>(wParam);
+            character = character == '\r' ? '\n' : character;
+            event.textInfo.character = character;
         }
 
         // Unprocessed events
         default:
             break;
     }
+
+    if (event.type != Event::Type::None)
+        this->m_eventQueue.push(event);
 }
 
 void Window::display()
@@ -352,6 +361,7 @@ bool Window::getEvent(Event* p_event)
         this->m_eventQueue.pop();
         return true;
     }
+    p_event->type = Event::Type::None;
     return false;
 }
 
@@ -396,10 +406,11 @@ iVec2 Window::getPosition() const
 
 iVec2 Window::getSize() const
 {
-    WINDOWPLACEMENT info = this->getWindowPlacementInfo();
+    RECT clientRect;
+    GetClientRect(this->m_handle, &clientRect);
     return iVec2(
-        info.rcNormalPosition.right - info.rcNormalPosition.left,
-        info.rcNormalPosition.bottom - info.rcNormalPosition.top
+        clientRect.right,
+        clientRect.bottom
     );
 }
 
@@ -464,6 +475,11 @@ const iVec2 &Window::getScreenSize()
     return Window::screenSize;
 }
 
+void Window::setTitle(std::string newTitle)
+{
+    SetWindowTextA(this->m_handle, newTitle.c_str());
+}
+
 void Window::setView(const View& view)
 {
     this->m_glContext.set_active();
@@ -472,17 +488,31 @@ void Window::setView(const View& view)
     glMatrixMode(GL_PROJECTION);
     
     glLoadIdentity();
+
+    const iVec2 windowSize = this->getSize();
+    const float aspect = static_cast<float>(windowSize.x) / static_cast<float>(windowSize.y);
+
     if (view.type == View::Projection::Orthographic) {
-        glOrtho(-2, 2, -2, 2, -2, 2);
+        const float top = view.fovY / 2.0F;
+        const float right = top * aspect;
+        glOrtho(-right, right, -top, top, view.nearPlane, view.farPlane);
     } else {
-        const iVec2 windowSize = this->getSize();
-        const float aspect = static_cast<float>(windowSize.x) / static_cast<float>(windowSize.y);
         const float top = view.nearPlane * tanf(view.fovY / 2.0F);
         const float right = top * aspect;
+
         glFrustum(-right, right, -top, top, view.nearPlane, view.farPlane);
     }
     glRotatef(view.rotation.angle * (57.2957795131), view.rotation.axis.x, view.rotation.axis.y, view.rotation.axis.z);
     glTranslatef(view.position.x, view.position.y, view.position.z);
+
+    static float matrix[16] = {
+        1, 0, 0, 0,
+        0, 1, 0, 0,
+        0, 0, -1, 0,
+        0, 0, 0, 1
+    };
+
+    glMultMatrixf(matrix);
     glMatrixMode(previousMode);
 }
 

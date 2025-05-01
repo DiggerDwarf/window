@@ -516,5 +516,12 @@ void Window::setView(const View& view)
     glMatrixMode(previousMode);
 }
 
+void Window::draw(const VertexArray& object)
+{
+    glVertexPointer(3, GL_FLOAT, sizeof(Vertex), object.vertices.data());
+    glColorPointer(4, GL_UNSIGNED_BYTE, sizeof(Vertex), (const char*)object.vertices.data() + 20);
+    glDrawElements(GL_TRIANGLES, object.indices.size(), GL_UNSIGNED_INT, object.indices.data());
+}
+
 }   // namespace sw
 

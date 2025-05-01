@@ -1,8 +1,7 @@
+#define SW_WANT_WIN32_SYMBOLS
 #include <SW/GLContext.hpp>
 
 #include <GL/glew.h>
-
-#include <windows.h>
 
 namespace sw
 {

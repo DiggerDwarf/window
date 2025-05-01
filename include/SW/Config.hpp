@@ -29,6 +29,8 @@
     DECL_HANDLE(HDC);
     DECL_HANDLE(HCURSOR);
     DECL_HANDLE(WINDOWPLACEMENT);
+    DECL_HANDLE(HGLRC);
+    #define CALLBACK __stdcall
     typedef long long LRESULT, LPARAM;
     typedef unsigned UINT;
     typedef unsigned long long WPARAM;

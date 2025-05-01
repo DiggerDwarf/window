@@ -21,6 +21,8 @@ public:
 
     Rotation operator+(const Rotation& other) const;
     void operator+=(const Rotation& other);
+
+    fVec3 appliedTo(const fVec3& in);
 };
 
 class Quaternion

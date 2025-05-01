@@ -42,7 +42,7 @@ void Quaternion::operator*=(const Quaternion &other)
 
 Rotation Quaternion::toRotation() const
 {
-if (this->i == 0 && this->j == 0 && this->k == 0) {
+    if (this->i == 0 && this->j == 0 && this->k == 0) {
         return Rotation(fVec3(0, 0, 1), 0);
     }
     float imaginaryLength = sqrt(this->i*this->i + this->j*this->j + this->k*this->k);
@@ -77,6 +77,15 @@ Rotation Rotation::operator+(const Rotation &other) const
 void Rotation::operator+=(const Rotation &other)
 {
     this->rotate(other.axis, other.angle);
+}
+
+fVec3 Rotation::appliedTo(const fVec3& in)
+{
+    Quaternion in_q(0, in.x, in.y, in.z);
+    Quaternion rot = Quaternion(this->axis, -this->angle);
+    Quaternion rot_inv(rot.x, -rot.i, -rot.j, -rot.k);
+    Quaternion out = (rot * in_q) * rot_inv;
+    return fVec3(out.i, out.j, out.k);
 }
 
 }   // namespace sw

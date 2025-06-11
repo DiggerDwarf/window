@@ -3,7 +3,7 @@ EXE 		= window
 SRC 		= $(wildcard src/*.cpp)
 OBJ 		= $(subst src, build, $(patsubst %.cpp, %.o, $(SRC)))
 
-DBG 		= 	# debug flags
+DBG 		= -g	# debug flags
 
 INCLUDE 	= -I include
 LIB 		= -Llib -lglew32 -lopengl32 -lgdi32
@@ -16,7 +16,7 @@ all: shared static
 remake: clean all
 
 clean:
-	rm -f $(subst build/, build/, $(OBJ))
+	rm -f $(OBJ)
 
 build/%.o: src/%.cpp
 	g++ $(INCLUDE) -c src/$*.cpp -o build/$*.o $(DBG) $(EXTRA) -DSW_BUILD -DSW_DEBUG

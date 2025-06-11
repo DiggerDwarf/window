@@ -2,7 +2,6 @@
 #define __Clipboard_hpp_INCLUDED
 
 #include <SW/Config.hpp>
-#include <SW/Window.hpp>
 #include <string>
 
 namespace sw

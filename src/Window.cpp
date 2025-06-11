@@ -86,7 +86,7 @@ Window::Window(unsigned x, unsigned y, std::string title, float targetFPS) :
     ++nb_windows;
 
 
-    PIXELFORMATDESCRIPTOR pfd = {0};
+    PIXELFORMATDESCRIPTOR pfd{};
     pfd.nSize              = sizeof(PIXELFORMATDESCRIPTOR);
     pfd.nVersion           = 1;
     pfd.dwFlags            = PFD_DRAW_TO_WINDOW | PFD_SUPPORT_OPENGL | PFD_DOUBLEBUFFER;
@@ -150,7 +150,10 @@ LRESULT CALLBACK Window::globalCallback(HWND hWnd, UINT uMsg, WPARAM wParam, LPA
     // If it's a valid pointer
     if (windowInstance != NULL)
     {
-        windowInstance->processEvent(uMsg, wParam, lParam);
+        if (windowInstance->processEvent(uMsg, wParam, lParam))
+        {
+            return 0;
+        }
     }
     
     if (uMsg == WM_CLOSE)
@@ -166,11 +169,11 @@ LRESULT CALLBACK Window::globalCallback(HWND hWnd, UINT uMsg, WPARAM wParam, LPA
 // Highly unfinished
 // TODO : process more event types
 // Follow the pattern and continue the switch
-void Window::processEvent(UINT uMsg, WPARAM wParam, LPARAM lParam)
+bool Window::processEvent(UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
     // Ignore if window has no handle
     if (this->m_handle == NULL)
-        return;
+        return false;
     
     // Get an event ready to be set and sent away
     Event event;
@@ -287,6 +290,7 @@ void Window::processEvent(UINT uMsg, WPARAM wParam, LPARAM lParam)
             event.sizeInfo.isMaximized = wParam == SIZE_MAXIMIZED;
             event.sizeInfo.isMinimized = wParam == SIZE_MINIMIZED;
             glViewport(0, 0, event.sizeInfo.newSize.x, event.sizeInfo.newSize.y);
+            break;
         }
 
         case WM_CHAR:
@@ -295,6 +299,7 @@ void Window::processEvent(UINT uMsg, WPARAM wParam, LPARAM lParam)
             char character = static_cast<char>(wParam);
             character = character == '\r' ? '\n' : character;
             event.textInfo.character = character;
+            break;
         }
 
         // Unprocessed events
@@ -302,8 +307,12 @@ void Window::processEvent(UINT uMsg, WPARAM wParam, LPARAM lParam)
             break;
     }
 
-    if (event.type != Event::Type::None)
+    if (event.type != Event::Type::None) {
         this->m_eventQueue.push(event);
+        return true;
+    }
+
+    return false;
 }
 
 void Window::display()
@@ -388,12 +397,12 @@ void Window::setCursor(Mouse::Cursor cursorType)
 }
 
 // Straightforward and done
-const HWND Window::getWin32Handle() const
+HWND Window::getWin32Handle() const
 {
     return this->m_handle;
 }
 
-const HDC Window::getDeviceContext() const
+HDC Window::getDeviceContext() const
 {
     return this->m_deviceContext;
 }

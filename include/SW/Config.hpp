@@ -40,10 +40,9 @@
 #ifdef SW_WANT_GL_SYMBOLS
     #include <GL/glew.h>
 #else
-    struct HDC__;
-    typedef HDC__* HDC;
-    struct HGLRC__;
-    typedef HGLRC__* HGLRC;
+    typedef unsigned int GLuint;
+    typedef int GLint;
+    typedef float GLfloat;
 #endif
 
 #endif // __Config_hpp_INCLUDED

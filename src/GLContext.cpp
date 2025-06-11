@@ -1,7 +1,6 @@
 #define SW_WANT_WIN32_SYMBOLS
+#define SW_WANT_GL_SYMBOLS
 #include <SW/GLContext.hpp>
-
-#include <GL/glew.h>
 
 namespace sw
 {
@@ -32,7 +31,10 @@ void GLContext::create(HDC hDc)
     wglMakeCurrent(hDc, tempContext);
     
     // retrieve wglCreateContextAttribsARB
+    #pragma GCC diagnostic push
+    #pragma GCC diagnostic ignored "-Wcast-function-type"
     PFNWGLCREATECONTEXTATTRIBSARBPROC wglCreateContextAttribsARB = reinterpret_cast<PFNWGLCREATECONTEXTATTRIBSARBPROC>(wglGetProcAddress("wglCreateContextAttribsARB"));
+    #pragma GCC diagnostic pop
 
     // parse settings ?
     // Laterrrrrrr
@@ -60,10 +62,13 @@ void GLContext::close()
     this->m_deviceContext = NULL;
 }
 
-void GLContext::set_active()
+void GLContext::set_active(bool active)
 {
-    if (wglGetCurrentContext() != this->m_glHandle) {
+    bool isActive = wglGetCurrentContext() != this->m_glHandle;
+    if (active && !isActive) {
         wglMakeCurrent(this->m_deviceContext, this->m_glHandle);
+    } else if (!active && isActive) {
+        wglMakeCurrent(this->m_deviceContext, NULL);
     }
 }
 

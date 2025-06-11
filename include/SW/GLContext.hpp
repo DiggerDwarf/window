@@ -21,7 +21,7 @@ public:
     void create(HDC hDc);
     void close();
 
-    void set_active();
+    void set_active(bool active = true);
 };
 
 } // namespace sw
